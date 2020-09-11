@@ -1,4 +1,4 @@
-from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, DateTime
+from sqlalchemy import Boolean, Column, Integer, String, DateTime
 from sqlalchemy.orm import relationship
 import datetime
 from sqlalchemy_utils import EmailType
