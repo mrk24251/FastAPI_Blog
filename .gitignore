@@ -9,6 +9,7 @@ __pycache__/
 # Distribution / packaging
 .Python
 build/
+punish_env/
 develop-eggs/
 dist/
 downloads/
@@ -107,6 +108,7 @@ celerybeat.pid
 # Environments
 .env
 .venv
+punish_env/
 env/
 venv/
 ENV/
