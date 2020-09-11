@@ -28,7 +28,7 @@ def _deactivate(args):
 _deactivate(["nondestructive"])
 aliases["deactivate"] = _deactivate
 
-$VIRTUAL_ENV = r"/home/mrk2/VIP/Self_calculation/punish_env"
+$VIRTUAL_ENV = r"/home/mrk2/Blog/FastAPI_Blog/punish_env"
 
 $_OLD_VIRTUAL_PATH = $PATH
 $PATH = $PATH[:]

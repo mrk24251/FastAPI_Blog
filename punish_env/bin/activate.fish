@@ -57,7 +57,7 @@ end
 # Unset irrelevant variables.
 deactivate nondestructive
 
-set -gx VIRTUAL_ENV '/home/mrk2/VIP/Self_calculation/punish_env'
+set -gx VIRTUAL_ENV '/home/mrk2/Blog/FastAPI_Blog/punish_env'
 
 # https://github.com/fish-shell/fish-shell/issues/436 altered PATH handling
 if test (echo $FISH_VERSION | head -c 1) -lt 3

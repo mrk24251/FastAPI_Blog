@@ -1,4 +1,4 @@
-#!/home/mrk2/VIP/Self_calculation/punish_env/bin/python
+#!/home/mrk2/Blog/FastAPI_Blog/punish_env/bin/python
 # -*- coding: utf-8 -*-
 import re
 import sys
