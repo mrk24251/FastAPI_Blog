@@ -108,7 +108,6 @@ celerybeat.pid
 # Environments
 .env
 .venv
-punish_env/
 env/
 venv/
 ENV/
