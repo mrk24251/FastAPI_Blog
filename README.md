@@ -1,1 +1,1 @@
-# FastAPI_Blog
+# Self_calculation
