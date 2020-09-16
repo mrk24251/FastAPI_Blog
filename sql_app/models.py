@@ -1,6 +1,5 @@
 from sqlalchemy import Boolean, Column, Integer, String, DateTime
 from sqlalchemy.orm import relationship
-from datetime import datetime
 import datetime
 from sqlalchemy_utils import EmailType
 

@@ -1,7 +1,7 @@
 # from typing import List, Optional
 
 from pydantic import BaseModel
-from datetime import datetime
+import datetime
 from typing import Optional
 from fastapi import Body
 
@@ -24,7 +24,7 @@ class UserBase(BaseModel):
 class User(UserBase):
     id: int
     is_active :bool
-    created_date: Optional[datetime] = Body(None)
+    created_date: Optional[datetime.datetime] = Body(None)
 
     class Config:
         orm_mode = True

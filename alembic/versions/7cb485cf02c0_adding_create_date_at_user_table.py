@@ -25,7 +25,7 @@ def upgrade():
         sa.Column("email", sa.String(100)),
         sa.Column("hashed_password", sa.String(100)),
         sa.Column("is_active", sa.Boolean, nullable=False),
-        sa.Column("created_date", sa.Date),
+        sa.Column("created_date", sa.DateTime),
     )
 
 def downgrade():
