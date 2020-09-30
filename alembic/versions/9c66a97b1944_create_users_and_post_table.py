@@ -1,8 +1,8 @@
-"""create real post and users table
+"""create users and post table
 
-Revision ID: 683c27a51634
-Revises: 60d5dff0213d
-Create Date: 2020-09-27 13:20:06.885119
+Revision ID: 9c66a97b1944
+Revises: 
+Create Date: 2020-09-30 11:27:54.248389
 
 """
 from alembic import op
@@ -10,8 +10,8 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '683c27a51634'
-down_revision = '60d5dff0213d'
+revision = '9c66a97b1944'
+down_revision = None
 branch_labels = None
 depends_on = None
 
@@ -19,9 +19,9 @@ depends_on = None
 def upgrade():
     op.create_table(
         "users",
-        sa.Column("id", sa.Integer, primary_key=True),
-        sa.Column("username",sa.String(100)),
-        sa.Column("email", sa.String(100)),
+        sa.Column("id", sa.Integer, primary_key=True,unique=True),
+        sa.Column("username",sa.String(100),unique=True),
+        sa.Column("email", sa.String(100),unique=True),
         sa.Column("hashed_password", sa.String(100)),
         sa.Column("is_active", sa.Boolean, nullable=False),
         sa.Column("created_date", sa.DateTime),
