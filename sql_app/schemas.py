@@ -32,7 +32,8 @@ class User(UserBase):
 class UserCreate(UserBase):
     password: str
 
-class UserInDB(User):
+class UserInDB(BaseModel):
+    username: str
     hashed_password: str
 
 class Token(BaseModel):

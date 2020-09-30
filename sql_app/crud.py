@@ -49,7 +49,7 @@ from sqlalchemy.orm import Session
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/token")
 
-SECRET_KEY = "65a204161686f1adcc2742b262d75d1c9db70cafc2a4340489fcca460e687a64"
+SECRET_KEY = "cdca8fd40b869304cbeeefda374eb43e80da654536996e5b5c802c308005f0ae"
 ALGORITHM = "HS256"
 
 def get_password_hash(password):
@@ -81,10 +81,9 @@ def create_user_post(db: Session, post: schemas.PostCreate, user_id: int):
 def verify_password(plain_password, hashed_password):
     return pwd_context.verify(plain_password, hashed_password)
 
-def get_user(db, username: str):
-    if username in db:
-        user_dict = db[username]
-        return schemas.UserInDB(**user_dict)
+def get_user(db,username: str):
+    user = db.query(models.User).filter(models.User.username == username).first()
+    return user
 
 
 #
@@ -112,27 +111,3 @@ def decode_token(db: Session,token):
     user = get_user(db, token)
     return user
 #
-async def get_current_user(db: Session,token: str = Depends(oauth2_scheme)):
-    credentials_exception = HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Could not validate credentials",
-        headers={"WWW-Authenticate": "Bearer"},
-    )
-    try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        username: str = payload.get("sub")
-        if username is None:
-            raise credentials_exception
-        token_data = schemas.TokenData(username=username)
-    except JWTError:
-        raise credentials_exception
-    user = get_user(db, username=token_data.username)
-    if user is None:
-        raise credentials_exception
-    return user
-
-
-async def get_current_active_user(current_user: schemas.User = Depends(get_current_user)):
-    if current_user.disabled:
-        raise HTTPException(status_code=400, detail="Inactive user")
-    return current_user
