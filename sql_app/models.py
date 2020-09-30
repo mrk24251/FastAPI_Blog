@@ -1,4 +1,4 @@
-from sqlalchemy import Boolean, Column, Integer, String, DateTime
+from sqlalchemy import Boolean, Column, Integer, String, DateTime, ForeignKey
 from sqlalchemy.orm import relationship
 import datetime
 from sqlalchemy_utils import EmailType
@@ -14,19 +14,21 @@ class User(Base):
     hashed_password = Column(String)
     is_active = Column(Boolean, default=True)
     created_date = Column(DateTime, default=datetime.datetime.utcnow)
-    # post = relationship("Post", back_populates="owner")
+    post = relationship("Post", back_populates="owner")
 
 #
-# class Post(Base):
-#     __tablename__ = "post"
-#
-#     id = Column(Integer, primary_key=True, index=True)
-#     title = Column(String)
-#     body = Column(String)
-#     is_active = Column(Boolean, default=True)
-#
-#     owner = relationship("User", back_populates="post")
-#     comment = relationship("Comment", back_populates="related_post")
+class Post(Base):
+    __tablename__ = "post"
+
+    id = Column(Integer, primary_key=True, index=True)
+    title = Column(String, index=True)
+    body = Column(String, index=True)
+    is_active = Column(Boolean, default=True)
+    created_date = Column(DateTime, default=datetime.datetime.utcnow)
+    owner_id = Column(Integer, ForeignKey("users.id"))
+
+    owner = relationship("User", back_populates="post")
+    # comment = relationship("Comment", back_populates="related_post")
 #
 # class Comment(Base):
 #     __tablename__ = "comment"

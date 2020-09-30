@@ -6,7 +6,7 @@ from sqlalchemy.orm import sessionmaker
 
 # postgresql+psycopg2://punish:punish@127.0.0.1:5432
 # SQLALCHEMY_DATABASE_URL = "sqlite:///./sql_app.db"postgresql+psycopg2cffi://user:password@host:port/dbname[?key=value&key=value...]
-SQLALCHEMY_DATABASE_URL = "postgres://lifdpiiqaqlivu:fa4b5d7373b3d3f7c878be6acc5dab7fdf57ae9b7fabb574294ca3799491d8e9@ec2-3-214-46-194.compute-1.amazonaws.com:5432/db19g1r4671b9a"
+SQLALCHEMY_DATABASE_URL = "postgres://xthanqepblpwgp:4405c48dd5b1862b5dac59e379061229e93ae906edd3885d604402dbf0cbd978@ec2-23-23-36-227.compute-1.amazonaws.com:5432/dc8lq8trdj44in"
 engine = create_engine(
     SQLALCHEMY_DATABASE_URL
 )

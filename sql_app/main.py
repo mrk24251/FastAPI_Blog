@@ -4,6 +4,7 @@ from fastapi import FastAPI,HTTPException,Depends, status
 # from sqlalchemy.orm import Session
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
+from fastapi.security import OAuth2PasswordBearer
 
 from . import crud, models, schemas
 from .database import SessionLocal, engine
@@ -20,6 +21,7 @@ def get_db():
     finally:
         db.close()
 
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 #
 # @app.post("/punishes/", response_model=schemas.Punish)
 # def create_punish(punish: schemas.PunishCreate, db: Session = Depends(get_db)):
@@ -78,23 +80,41 @@ def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
     db_user = crud.create_user(db=db,user=user)
     return db_user
 
+@app.post("/users/{user_id}/posts/", response_model=schemas.Post)
+def create_post_for_user(
+    user_id: int, post: schemas.PostCreate, db: Session = Depends(get_db)
+):
+    return crud.create_user_post(db=db, post=post, user_id=user_id)
 
-# @app.post("/token", response_model=Token)
-# async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends()):
-#     user = authenticate_user(fake_users_db, form_data.username, form_data.password)
-#     if not user:
-#         raise HTTPException(
-#             status_code=status.HTTP_401_UNAUTHORIZED,
-#             detail="Incorrect username or password",
-#             headers={"WWW-Authenticate": "Bearer"},
-#         )
-#     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-#     access_token = create_access_token(
-#         data={"sub": user.username}, expires_delta=access_token_expires
-#     )
-#     return {"access_token": access_token, "token_type": "bearer"}
-#
-#
+
+@app.get("/posts/", response_model=List[schemas.Post])
+def read_posts(db: Session = Depends(get_db)):
+    items = crud.get_posts(db)
+    return items
+
+@app.get("/posts/{post_id}", response_model=schemas.Post)
+def read_post(post_id: int, db: Session = Depends(get_db),token: str = Depends(oauth2_scheme)):
+    db_post = crud.get_post(db, post_id=post_id)
+    if db_post is None:
+        raise HTTPException(status_code=404, detail="Post not found")
+    return {db_post,token}
+
+@app.post("/token", response_model=schemas.Token)
+async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(),db: Session = Depends(get_db)):
+    user = crud.authenticate_user(db, form_data.username, form_data.password)
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect username or password",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token = create_access_token(
+        data={"sub": user.username}, expires_delta=access_token_expires
+    )
+    return {"access_token": access_token, "token_type": "bearer"}
+
+
 # @app.get("/users/me")
 # async def read_users_me(current_user: User = Depends(get_current_active_user)):
 #     return current_user
