@@ -46,6 +46,8 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 #     db_punish = crud.get_punish_by_value(db, value=punish.value)
 #     return db_punish
 
+
+
 # @app.post("/punishes/{punish_id}/items/", response_model=schemas.Item)
 # def create_item_for_user(
 #     user_id: int, item: schemas.ItemCreate, db: Session = Depends(get_db)
@@ -81,24 +83,17 @@ def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
     db_user = crud.create_user(db=db,user=user)
     return db_user
 
-@app.post("/users/{user_id}/posts/", response_model=schemas.Post)
-def create_post_for_user(
-    user_id: int, post: schemas.PostCreate, db: Session = Depends(get_db)
-):
-    return crud.create_user_post(db=db, post=post, user_id=user_id)
-
-
 @app.get("/posts/", response_model=List[schemas.Post])
 def read_posts(db: Session = Depends(get_db)):
     items = crud.get_posts(db)
     return items
 
 @app.get("/posts/{post_id}", response_model=schemas.Post)
-def read_post(post_id: int, db: Session = Depends(get_db),token: str = Depends(oauth2_scheme)):
+def read_post(post_id: int, db: Session = Depends(get_db)):
     db_post = crud.get_post(db, post_id=post_id)
     if db_post is None:
         raise HTTPException(status_code=404, detail="Post not found")
-    return {db_post,token}
+    return db_post
 
 @app.post("/token", response_model=schemas.Token)
 async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(),db: Session = Depends(get_db)):
@@ -115,7 +110,7 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
     )
     return {"access_token": access_token, "token_type": "bearer"}
 
-async def get_current_user(db: Session,token: str = Depends(oauth2_scheme)):
+async def get_current_user(db: Session = Depends(get_db),token = Depends(oauth2_scheme)):
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
@@ -126,20 +121,21 @@ async def get_current_user(db: Session,token: str = Depends(oauth2_scheme)):
         username: str = payload.get("sub")
         if username is None:
             raise credentials_exception
-        token_data = schemas.TokenData(username=username)
+        token_data = username
     except JWTError:
         raise credentials_exception
-    user = crud.get_user(db, username=token_data.username)
+    user = crud.get_user(db, username=token_data)
     if user is None:
         raise credentials_exception
     return user
 
+@app.post("/users/posts/", response_model=schemas.Post)
+def create_post_for_user(
+    post: schemas.PostCreate, db: Session = Depends(get_db) ,current_user = Depends(get_current_user)
+):
+    user_id = current_user.id
+    return crud.create_user_post(db=db, post=post, user_id=user_id)
 
-async def get_current_active_user(current_user: schemas.User = Depends(get_current_user)):
-    if current_user.disabled:
-        raise HTTPException(status_code=400, detail="Inactive user")
+@app.get("/users/me/",response_model=schemas.User)
+async def read_users_me(current_user = Depends(get_current_user)):
     return current_user
-
-# @app.get("/users/me")
-# async def read_users_me(current_user: User = Depends(get_current_active_user)):
-#     return current_user

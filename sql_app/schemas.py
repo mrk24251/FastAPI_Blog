@@ -21,6 +21,10 @@ class UserBase(BaseModel):
     username : str
     email : str
 
+class UserBase2(BaseModel):
+    username : str
+
+
 class User(UserBase):
     id: int
     is_active :bool
@@ -41,7 +45,7 @@ class Token(BaseModel):
     token_type: str
 
 class TokenData(BaseModel):
-    username: Optional[str] = None
+    username: str
 
 class PostBase(BaseModel):
     title: str

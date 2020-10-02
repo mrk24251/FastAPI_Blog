@@ -85,7 +85,6 @@ def get_user(db,username: str):
     user = db.query(models.User).filter(models.User.username == username).first()
     return user
 
-
 #
 def authenticate_user(db, username: str, password: str):
     user = get_user(db, username)
@@ -104,10 +103,5 @@ def create_access_token(data: dict, expires_delta: timedelta = None):
     to_encode.update({"exp": expire})
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
-
-def decode_token(db: Session,token):
-    # This doesn't provide any security at all
-    # Check the next version
-    user = get_user(db, token)
-    return user
-#
+# async def get_current_active_user(current_user = Depends(get_current_user)):
+#     return current_user.username
