@@ -2,7 +2,7 @@
 
 from pydantic import BaseModel
 import datetime
-from typing import Optional
+from typing import Optional,List
 from fastapi import Body
 
 # class PunishValue(BaseModel):
@@ -47,6 +47,20 @@ class Token(BaseModel):
 class TokenData(BaseModel):
     username: str
 
+class CommentBase(BaseModel):
+    name: str
+    email: str
+    body: str
+
+class Comment(CommentBase):
+    id: int
+    post_id: int
+    created_date: Optional[datetime.datetime] = Body(None)
+    is_active: bool
+
+    class Config:
+        orm_mode = True
+
 class PostBase(BaseModel):
     title: str
     body: str
@@ -57,6 +71,8 @@ class PostCreate(PostBase):
 class Post(PostBase):
     id: int
     owner_id: int
+    owner: User
+    comment: List[Comment]
     created_date: Optional[datetime.datetime] = Body(None)
 
     class Config:

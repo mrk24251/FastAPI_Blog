@@ -88,12 +88,14 @@ def read_posts(db: Session = Depends(get_db)):
     items = crud.get_posts(db)
     return items
 
-@app.get("/posts/{post_id}", response_model=schemas.Post)
+@app.get("/posts/{post_id}")
 def read_post(post_id: int, db: Session = Depends(get_db)):
     db_post = crud.get_post(db, post_id=post_id)
+    comments = db.query(models.Comment).filter(models.Comment.post_id == post_id)
+    active_comments = comments.filter(models.Comment.is_active == True).all()
     if db_post is None:
         raise HTTPException(status_code=404, detail="Post not found")
-    return db_post
+    return {"db_post":db_post,"active_comments":active_comments}
 
 @app.post("/token", response_model=schemas.Token)
 async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(),db: Session = Depends(get_db)):
@@ -135,6 +137,12 @@ def create_post_for_user(
 ):
     user_id = current_user.id
     return crud.create_user_post(db=db, post=post, user_id=user_id)
+
+@app.post("/posts/{post_id}", response_model=schemas.Comment)
+def create_comment(comment: schemas.CommentBase , post_id: int, db: Session = Depends(get_db)):
+    db_comment = crud.create_post_comment(db,comment= comment , post_id=post_id)
+
+    return db_comment
 
 @app.get("/users/me/",response_model=schemas.User)
 async def read_users_me(current_user = Depends(get_current_user)):

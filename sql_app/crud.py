@@ -105,3 +105,18 @@ def create_access_token(data: dict, expires_delta: timedelta = None):
     return encoded_jwt
 # async def get_current_active_user(current_user = Depends(get_current_user)):
 #     return current_user.username
+
+#comment
+# def create_post_comment(db: Session, comment: schemas.CommentBase, user_id: int):
+#     db_post = models.Post(**post.dict(), owner_id=user_id)
+#     db.add(db_post)
+#     db.commit()
+#     db.refresh(db_post)
+#     return db_post
+
+def create_post_comment(db: Session, comment: schemas.CommentBase, post_id: int):
+    db_comment = models.Comment(**comment.dict(), post_id=post_id)
+    db.add(db_comment)
+    db.commit()
+    db.refresh(db_comment)
+    return db_comment

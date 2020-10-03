@@ -28,16 +28,17 @@ class Post(Base):
     owner_id = Column(Integer, ForeignKey("users.id"))
 
     owner = relationship("User", back_populates="post")
-    # comment = relationship("Comment", back_populates="related_post")
-#
-# class Comment(Base):
-#     __tablename__ = "comment"
-#
-#     id = Column(Integer, primary_key=True, index=True)
-#     name = Column(String)
-#     email = Column(EmailType)
-#     body = Column(String)
-#     is_active = Column(Boolean, default=False)
-#     created_date = Column(DateTime, default=datetime.datetime.utcnow)
-#
-#     related_post = relationship("Post", back_populates="comment")
+    comment = relationship("Comment", back_populates="related_post")
+
+class Comment(Base):
+    __tablename__ = "comment"
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String)
+    email = Column(EmailType)
+    body = Column(String)
+    is_active = Column(Boolean, default=False)
+    created_date = Column(DateTime, default=datetime.datetime.utcnow)
+    post_id = Column(Integer, ForeignKey("post.id"))
+
+    related_post = relationship("Post", back_populates="comment")
