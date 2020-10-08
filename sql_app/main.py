@@ -1,11 +1,13 @@
 from typing import List,Optional
 from datetime import datetime, timedelta
-from fastapi import FastAPI,HTTPException,Depends, status
+from fastapi import FastAPI,HTTPException,Depends, status, File, UploadFile
 # from sqlalchemy.orm import Session
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
+import cloudinary
+import cloudinary.uploader
 
 from . import crud, models, schemas
 from .database import SessionLocal, engine
@@ -23,6 +25,7 @@ def get_db():
         db.close()
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+
 #
 # @app.post("/punishes/", response_model=schemas.Punish)
 # def create_punish(punish: schemas.PunishCreate, db: Session = Depends(get_db)):
@@ -131,12 +134,15 @@ async def get_current_user(db: Session = Depends(get_db),token = Depends(oauth2_
         raise credentials_exception
     return user
 
-@app.post("/users/posts/", response_model=schemas.Post)
+@app.post("/users/posts/")
 def create_post_for_user(
-    post: schemas.PostCreate, db: Session = Depends(get_db) ,current_user = Depends(get_current_user)
+    title: str,body: str,file: UploadFile = File(...) , db: Session = Depends(get_db) ,current_user = Depends(get_current_user)
 ):
     user_id = current_user.id
-    return crud.create_user_post(db=db, post=post, user_id=user_id)
+    result = cloudinary.uploader.upload(file.file)
+    url = result.get("url")
+
+    return crud.create_user_post(db=db, title=title, body=body, user_id=user_id, url=url)
 
 @app.post("/posts/{post_id}", response_model=schemas.Comment)
 def create_comment(comment: schemas.CommentBase , post_id: int, db: Session = Depends(get_db)):

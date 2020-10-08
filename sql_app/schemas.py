@@ -71,6 +71,7 @@ class PostCreate(PostBase):
 class Post(PostBase):
     id: int
     owner_id: int
+    url: str
     owner: User
     comment: List[Comment]
     created_date: Optional[datetime.datetime] = Body(None)

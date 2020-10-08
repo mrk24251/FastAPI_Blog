@@ -71,8 +71,8 @@ def get_posts(db: Session):
 def get_post(db: Session, post_id: int):
     return db.query(models.Post).filter(models.Post.id == post_id).first()
 
-def create_user_post(db: Session, post: schemas.PostCreate, user_id: int):
-    db_post = models.Post(**post.dict(), owner_id=user_id)
+def create_user_post(db: Session, user_id: int, url:str, title:str, body: str,):
+    db_post = models.Post(title= title, body= body, owner_id=user_id,url=url)
     db.add(db_post)
     db.commit()
     db.refresh(db_post)

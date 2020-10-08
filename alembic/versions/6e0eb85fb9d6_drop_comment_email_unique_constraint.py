@@ -17,7 +17,9 @@ depends_on = None
 
 
 def upgrade():
-    op.drop_constraint('uq_comment_email','comment')
+    op.add_column('post',
+                  sa.Column('url', sa.String(200))
+                  )
 
 def downgrade():
     pass
